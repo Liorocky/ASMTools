@@ -1,0 +1,593 @@
+{
+    "comment": "2019-10-08更新",
+	"instruc": {
+		"mov": {
+			"name": "传送 move data",
+			"format": "mov opd, ops",
+			"usage": "(ops) → opd；分为主存储器、通用寄存器、段寄存器，不可同时使用主存储器，类型要匹配：byte,word,dword",
+			"effectFlag": "无"
+		},
+		"movsx": {
+			"name": "带符号扩充的传送 move with sign-extend",
+			"format": "movsx opd, ops",
+			"usage": "将ops的符号向前扩展成与opd相同的数据类型后 → opd ops不能为立即数，",
+			"effectFlag": "无"
+		},
+		"movzx": {
+			"name": "带0扩展的传送 move with zero-extend",
+			"format": "movzx opd, ops",
+			"usage": "将ops的高位向前补0扩展成与opd相同的数据类型后 → opd",
+			"effectFlag": "无"
+		},
+		"xchg": {
+			"name": "数据交换 exchange",
+			"format": "xchg opd, ops",
+			"usage": "将(opd)与(ops)交换 源操作数不能是立即操作数",
+			"effectFlag": "无"
+		},
+		"bswap": {
+			"name": "32位寄存器字节交换 byte swap",
+			"format": "bswap reg (reg，代表寄存器，下同)",
+			"usage": "将从第一个与第四个字节交换，将第二个字节和第三个字节交换 （按字节反序），32位寄存器",
+			"effectFlag": "无"
+		},
+		"xadd": {
+			"name": "交换并相加 exchange and add",
+			"format": "xadd opd, ops",
+			"usage": "将(opd)与(ops)互换，(opd)+(ops) → opd",
+			"effectFlag": "af,of,pf, sf,zf,cf"
+		},
+		"xlat": {
+			"name": "查表转换 table look-up translation",
+			"format": "xlat ops 或 xlatb",
+			"usage": "(ds:[bx/ebx+al]) → al (求和之前al作无符号扩展), 一般把数表的首地址放到bx/ebx中，lea bx, buf&nbsp; ;al就是在buf中的位置",
+			"effectFlag": "无"
+		},
+		"lea": {
+			"name": "传送偏移地址 load effective address",
+			"format": "lea reg,ops",
+			"usage": "ops → reg",
+			"effectFlag": "无"
+		},
+		"lds": {
+			"name": "传送偏移地址和数据段首地址 load data segment register",
+			"format": "lds reg, ops",
+			"usage": "(ops)→ reg&nbsp;&nbsp;  (ops+2/4)→ ds；ops一定是存储器地址，类型为dword/fword",
+			"effectFlag": "无"
+		},
+		"les/lfs/lgs": {
+			"name": "传送偏移地址和附加段首地址 load far pointer to extra segment",
+			"format": "les/lfs/lgs reg, ops",
+			"usage": "同上，只是段寄存器分别为es，fs，gs",
+			"effectFlag": "无"
+		},
+		"lss": {
+			"name": "传送偏移地址和堆栈首地址 load stack segment",
+			"format": "lss reg, ops",
+			"usage": "同上，段寄存器为ss",
+			"effectFlag": "无"
+		},
+		"push": {
+			"name": "进栈 push word/dword onto stack",
+			"format": "push ops pushw ops 或pushd ops",
+			"usage": "16位段:(sp) – 2/4 → sp&nbsp;&nbsp;&nbsp; (ops) → [sp]; 可以为两个字节， 或四个字节32位段:(esp) – 2/4 → esp&nbsp; (ops) → [esp]; 同上",
+			"effectFlag": "无"
+		},
+		"pusha": {
+			"name": "所有16位通用寄存器进栈 pushall 16-bit general registers",
+			"format": "pusha",
+			"usage": "(sp/esp) –2 → sp/esp 重复8次压入ax,cx,dx,bx,sp(指令执前),bp,si,di；是先改变sp/esp 再把数据写入",
+			"effectFlag": "无"
+		},
+		"pushad": {
+			"name": "所有32位通用寄存器进栈 pushall 32-bit general registers",
+			"format": "pushad",
+			"usage": "(sp/esp) – 4 → sp/esp 重复8次压入eax,ecx,edx,ebx, esp(指令执行前),ebp,esi,edi；是先改变sp/esp 再把数据写入",
+			"effectFlag": "无"
+		},
+		"pop": {
+			"name": "出栈 pop a word/dword frome the stack",
+			"format": "pop opd",
+			"usage": "16位段:[sp]→ (opd) ; (sp) + 2/4 → sp&nbsp;&nbsp; ;可以为两个字节，或四个字节 32位段:[esp]→ (opd) ; (esp) + 2/4 → esp ;&nbsp; 同上",
+			"effectFlag": "无"
+		},
+		"popa": {
+			"name": "出栈到所有16位通用寄存器 pop stack into all 16-bit registers",
+			"format": "popa",
+			"usage": "将栈顶的16个字节依次出栈到di,si,bp",
+			"effectFlag": "无"
+		},
+		"popad": {
+			"name": "出栈到所有32位通用寄存器 pop stack into all 32-bit registers",
+			"format": "popad",
+			"usage": "将栈顶的16个字节依次出栈到edi,esi,ebp",
+			"effectFlag": "无"
+		},
+		"pushf": {
+			"name": "标志进栈 push flags onto stack",
+			"format": "pushf",
+			"usage": "(sp/esp) – 2 → sp/esp (flags) → [sp/esp]",
+			"effectFlag": "无"
+		},
+		"pushfd": {
+			"name": "扩展标志出栈 push eflags onto stack",
+			"format": "pushfd",
+			"usage": "sp/esp – 4 → sp/esp (eflags) → [sp/esp] ",
+			"effectFlag": "无"
+		},
+		"popf": {
+			"name": "标志出栈 pop stack into flags",
+			"format": "popf",
+			"usage": "[sp/esp] → flags sp/esp + 4 → sp/esp",
+			"effectFlag": "无"
+		},
+		"popfd": {
+			"name": "扩展标志出栈 pop stack into eflags",
+			"format": "popfd",
+			"usage": "[sp/esp] → eflags sp/esp + 4 → sp/esp",
+			"effectFlag": "无"
+		},
+		"lahf": {
+			"name": "标志传送到ah load ah from flags",
+			"format": "lahf",
+			"usage": "(flags<sub>7-0</sub>) →&nbsp; ah",
+			"effectFlag": "无"
+		},
+		"sahf": {
+			"name": "将ah传送到flags store ah into flags ",
+			"format": "sahf",
+			"usage": "(ah) → flags<sub>7-0</sub>",
+			"effectFlag": "sf,zf,af,pf,cf"
+		},
+		"in": {
+			"name": "输入 input from port",
+			"format": "in opd, ops",
+			"usage": "([ops]) →&nbsp; opd; opd只能是al、ax、eax;ops为立即数(&lt;255)或者dx",
+			"effectFlag": "无"
+		},
+		"out": {
+			"name": "输出 output to port",
+			"format": "out opd, ops",
+			"usage": "(ops) → [opd]； ops只能是al、ax、eax；opd为立即数(&lt;255)或者dx",
+			"effectFlag": "无"
+        },
+        "inc": {
+			"name": "加 1<br>increment",
+			"format": "inc opd",
+			"usage": "(opd) + 1 → opd",
+			"effectFlag": "af,of,pf,<br>sf,zf"
+		},
+		"add": {
+			"name": "加<br>addition",
+			"format": "add opd, ops",
+			"usage": "(opd) + (ops) → opd",
+			"effectFlag": "af,of,pf,<br>sf,zf"
+		},
+		"adc": {
+			"name": "带进位加<br>add with carry",
+			"format": "adc opd, ops",
+			"usage": "(opd) + (ops) + cf → opd",
+			"effectFlag": "af,of,pf,<br>sf,zf"
+		},
+		"dec": {
+			"name": "减 1<br>decrement",
+			"format": "dec opd",
+			"usage": "(opd) – 1 → opd",
+			"effectFlag": "af,of,pf,<br>sf,zf"
+		},
+		"neg": {
+			"name": "求补<br>two`s complement negation",
+			"format": "neg opd",
+			"usage": "0 – (opd) → opd",
+			"effectFlag": "af,of,pf,<br>sf,zf"
+		},
+		"sub": {
+			"name": "减<br>subtract",
+			"format": "sub opd, ops",
+			"usage": "(opd) – (ops) → opd",
+			"effectFlag": "af,of,pf,<br>sf,zf"
+		},
+		"sbb": {
+			"name": "带借位减<br>subtract with borrow",
+			"format": "sbb opd, ops",
+			"usage": "(opd) – (ops) – cf → opd",
+			"effectFlag": "af,of,pf,<br>sf,zf"
+		},
+		"cmp": {
+			"name": "比较<br>compare",
+			"format": "cmp opd, ops",
+			"usage": "(opd) – (ops)<br>一般用于转移前的控制，应用于跳转",
+			"effectFlag": "af,of,pf,<br>sf,zf"
+		},
+		"mul": {
+			"name": "无符号乘<br>unsigned multiply",
+			"format": "mul ops",
+			"usage": "字节乘：(al) * (ops) → ax; 字乘法：(ax) * (ops) → dx:ax;<br>双字乘：(eax) * (ops) → edx:eax",
+			"effectFlag": "cf,of"
+		},
+		"imul": {
+			"name": "单操作数的有符号乘<br>signed integer multiply",
+			"format": "imul ops",
+			"usage": "字节乘：(al) * (ops) → ax; 字乘法：(ax) * (ops) → dx:ax;<br>双字乘：(eax) * (ops) → edx:eax",
+			"effectFlag": "cf,of"
+		},
+		"cbw": {
+			"name": "将字节转换成字<br>convert byte to word",
+			"format": "cbw",
+			"usage": "将al中的符号扩展到ah中,数据的补码数值没有变",
+			"effectFlag": "无"
+		},
+		"cwd": {
+			"name": "将字转换成双字<br>convert word to double word",
+			"format": "cwd",
+			"usage": "将ax中的符号扩展到dx的高位中",
+			"effectFlag": "无"
+		},
+		"cwde": {
+			"name": "将字转换成双字<br>convert word to double word",
+			"format": "cwde",
+			"usage": "将ax中的符号扩展到eax的高位中",
+			"effectFlag": "无"
+		},
+		"cdq": {
+			"name": "将双字转换成4字<br>convert double word to quadword",
+			"format": "cdq",
+			"usage": "将eax中的符号扩展到edx中",
+			"effectFlag": "无"
+		},
+		"div": {
+			"name": "无符号除<br>unsigned divide",
+			"format": "div ops",
+			"usage": "字节除:(ax)/(ops)→al(商),ah(余数);字除:(dx:ax)/(ops) → ax(商),<br>dx(余数) 双字除: (edx:eax)/(ops) → eax(商),edx(余数)",
+			"effectFlag": "af,of,pf,<br>cf,sf,zf"
+		},
+		"idiv": {
+			"name": "有符号除<br>signed integer divide",
+			"format": "idiv ops",
+			"usage": "字节除:(ax)/(ops)→al(商),ah(余数);字除:(dx:ax)/(ops) → ax(商),<br>dx(余数) 双字除: (edx:eax)/(ops) → eax(商),edx(余数)",
+			"effectFlag": "af,of,pf,<br>cf,sf,zf"
+        },
+        "je/jz": {
+			"name": "相等/等于0转移<br>jump if equal/zero",
+			"format": "je/jz 标号",
+			"usage": "zf = 1 转移",
+			"effectFlag": "无"
+		},
+		"jne/jnz": {
+			"name": "不相等/不等于0转移<br>jump if not equal/zero",
+			"format": "jne/jnz 标号",
+			"usage": "zf = 0 转移",
+			"effectFlag": "无"
+		},
+		"js": {
+			"name": "为负转移<br>jump if sign",
+			"format": "js 标号",
+			"usage": "sf = 1 转移",
+			"effectFlag": "无"
+		},
+		"jns": {
+			"name": "为正转移<br>jump if positive",
+			"format": "jns 标号",
+			"usage": "sf = 0 转移",
+			"effectFlag": "无"
+		},
+		"jo": {
+			"name": "溢出转移<br>jump if overflow",
+			"format": "jo 标号",
+			"usage": "of = 1 转移",
+			"effectFlag": "无"
+		},
+		"jno": {
+			"name": "无溢出转移<br>jump if not overflow ",
+			"format": "jno 标号",
+			"usage": "of = 0 转移",
+			"effectFlag": "无"
+		},
+		"jc": {
+			"name": "有进位转移<br>jump if carry",
+			"format": "jc 标号",
+			"usage": "cf = 1 转移",
+			"effectFlag": "无"
+		},
+		"jnc": {
+			"name": "无进位转移<br>jump if not carry",
+			"format": "jnc 标号",
+			"usage": "cf = 0 转移",
+			"effectFlag": "无"
+		},
+		"jp/jpe": {
+			"name": "偶检验/偶性转移<br>jump if parity/parity even ",
+			"format": "jp/jpe 标号",
+			"usage": "pf = 1 转移",
+			"effectFlag": "无"
+		},
+		"jnp/jpo": {
+			"name": "奇检验/奇性转移<br>jump if no parity/parity odd",
+			"format": "jnp/jpo 标号",
+			"usage": "pf = 0 转移",
+			"effectFlag": "无"
+		},
+		"jl/jnge": {
+			"name": "小于/不大于也不等于 转移<br>jump if less/not greater nor equal",
+			"format": "jl/jnge 标号",
+			"usage": "sf ≠ of 转移",
+			"effectFlag": "无"
+		},
+		"jnl/jge": {
+			"name": "不小于/大于或等于转移<br>jump if not less/greater or equal",
+			"format": "jnl/jge 标号",
+			"usage": "sf = of 转移",
+			"effectFlag": "无"
+		},
+		"jg/jnle": {
+			"name": "大于/不小于或不等于转移<br>jump if greater/not less or not equal ",
+			"format": "jg/jnle 标号",
+			"usage": "sf = of, 且zf = 0 转移",
+			"effectFlag": "无"
+		},
+		"jng/jle": {
+			"name": "不大于/小于或等于转移<br>jump if not greater /less or equal",
+			"format": "jng/jle 标号",
+			"usage": "sf ≠ of 或zf =&nbsp; 1 转移",
+			"effectFlag": "无"
+		},
+		"jb/jnae": {
+			"name": "低于/不高于且不等于转移(无符号)<br>jump if below/not above not equal",
+			"format": "jb/jnae 标号",
+			"usage": "cf = 1 转移",
+			"effectFlag": "无"
+		},
+		"jnb/jae": {
+			"name": "不低于/高于或等于转移(无符号)<br>jump if now below/above or equal",
+			"format": "jnb/jae 标号",
+			"usage": "cf = 0 转移",
+			"effectFlag": "无"
+		},
+		"ja/jnbe": {
+			"name": "高于/不低于且比等于转移(无符号)<br>jump if above/not below nor equal",
+			"format": "ja/jnbe 标号",
+			"usage": "cf = 0 且 zf = 0 转移",
+			"effectFlag": "无"
+		},
+		"jna/jbe": {
+			"name": "不高于/低于或等于<br>jump if not above/below or equal",
+			"format": "jna/jbe 标号 ",
+			"usage": "cf = 1 或 zf =1 转移",
+			"effectFlag": "无"
+		},
+		"jmp": {
+			"name": "无条件转移<br>jump unconditionally",
+			"format": "jmp opd",
+			"usage": "<strong>相对转移</strong>：(opd)+ip/eip → ip/eip 近转移:(opd) → ip/eip<br>远转移：(opd) → ip/eip, (opd+2/4) → cs,或根据描述符决定",
+			"effectFlag": "无"
+		},
+		"jcxz": {
+			"name": "cx为0转移<br>jump if cx is zero",
+			"format": "jcxz 标号<br>或jecxz 标号",
+			"usage": "若(cx/ecx) = 0 转移",
+			"effectFlag": "无"
+		},
+		"loop": {
+			"name": "循环<br>loop",
+			"format": "loop 标号<br>或loopw/loopd 标号",
+			"usage": "(cx/ecx) – 1 → cx/ecx, 若(cx/ecx) ≠ 0 则转移",
+			"effectFlag": "无"
+		},
+		"loope/loopz": {
+			"name": "相等/为0循环<br>loop if equal/zero",
+			"format": "loope/loopz 标号",
+			"usage": "(cx/ecx) – 1 → cx/ecx,若(cx/ecx) ≠ 0 且zf = 1 则转移",
+			"effectFlag": "无"
+		},
+		"loopne/loopnz": {
+			"name": "不相等/不为0循环<br>loop if not equal/not zero",
+			"format": "loopne/loopnz 标号",
+			"usage": "(cx/ecx) – 1 → cx/ecx,若(cx/ecx) ≠ 0 且zf = 0 则转移",
+			"effectFlag": "无"
+		},
+		"bound": {
+			"name": "检查数组下标边界<br>check array index against bounds",
+			"format": "bound reg, ops",
+			"usage": "若reg的索引值小于ops指定的下边界或大于ops指定的上边界，则变成5号异常",
+			"effectFlag": "无"
+		},
+		"call": {
+			"name": "调用子程序<br>call a procedure",
+			"format": "call opd",
+			"usage": "调用opd所指定的子程序(32位段的远调用时，CS被扩展成4字节后压栈)",
+			"effectFlag": "任务切换有影响，否则无"
+		},
+		"ret": {
+			"name": "从子程序返回<br>return from procedure",
+			"format": "ret [n]<br>n代表16位常量,[]表可选",
+			"usage": "从子程序返回到调用语句的下一个语句处，若n存在，则(sp/esp)+n → sp/esp;32位段远返回时，cs出栈时改变4字节的栈指针",
+			"effectFlag": "无"
+		},
+		"int": {
+			"name": "中断调用<br>interrupt",
+			"format": "int n",
+			"usage": "(flags/eflags) 入栈,0→if,tf;(cs) 入栈;(4*n)→ip,(4*n+2)→cs或根据idt给eip,cs赋值",
+			"effectFlag": "0→tf,if,返回时复原"
+		},
+		"into": {
+			"name": "溢出中断<br>interrupt if overflow",
+			"format": "into",
+			"usage": "(flags/eflags) 入栈,0→if,tf;(cs) 入栈;(4*n)→ip,(4*n+2)→cs或根据idt给eip,cs赋值;of=1时产生int 4",
+			"effectFlag": "0→tf,if,返回时复原"
+		},
+		"iret": {
+			"name": "中断返回<br>interrupt return",
+			"format": "iret 或iretd(32位段)<br>或iretf",
+			"usage": "ip出栈，cs出栈，flags/eflags出栈,根据nt标志做相应的处理",
+			"effectFlag": "都有影响"
+        },
+        "movs": {
+			"name": "串传送<br>move byte/word string",
+			"format": "movs opd, ops<br>movsb,movsw,movsd",
+			"usage": "(ds:[si/esi]) → es:[di/edi],(ops所在的段可以取代ds),(si/esi)±1/2/4 → si/esi, (di/edi)±1/2/4 → di/edi",
+			"effectFlag": "无"
+		},
+		"cmps": {
+			"name": "串比较<br>compare string",
+			"format": "cmps ops, opd<br>cmpsb,compsw,compsd",
+			"usage": "(ds:[si/esi]) – (es:[di/edi]),(si/esi)±1/2/4 → si/esi,<br>(di/edi)±1/2/4 →di/edi",
+			"effectFlag": "af,cf,of,pf,<br>sf,zf"
+		},
+		"scas": {
+			"name": "串搜索<br>scan string",
+			"format": "scas opd<br>scasb,scasw,scasd",
+			"usage": "(al/ax/eax) – (es:[di/edi]),(di/edi)±1/2/4 →di/edi",
+			"effectFlag": "af,cf,of,pf,<br>sf,zf"
+		},
+		"lods": {
+			"name": "取字符串<br>load string",
+			"format": "lods ops<br>lodsb, lodsw,lodsd",
+			"usage": "(ds:[si/esi]) → al/ax/eax,(ops所在的段可以取代ds),<br>(si/esi)±1/2/4 →si/esi",
+			"effectFlag": "无"
+		},
+		"stos": {
+			"name": "存字符串<br>store string",
+			"format": "stos opd<br>stosb,stosw,stosd",
+			"usage": "(al/ax/eax)→es:[di/edi],(di/edi)±1/2/4 →di/edi",
+			"effectFlag": "无"
+		},
+		"ins": {
+			"name": "输入串<br>input from port to string",
+			"format": "ins opd, dx<br>insb,insw,insd",
+			"usage": "([dx]) →es:[di/edi],(di/edi)±1/2/4 →di/edi",
+			"effectFlag": "无"
+		},
+		"outs": {
+			"name": "输出串<br>output string port",
+			"format": "outs opd, ops<br>outsb,outsw,outsd",
+			"usage": "(ds:[si/esi])→[dx],(si/esi)±1/2/4 →si/esi",
+			"effectFlag": "无"
+        },
+        "not": {
+			"name": "求反<br>one complement negation",
+			"format": "not opd",
+			"usage": "(opd)→opd",
+			"effectFlag": "无"
+		},
+		"and": {
+			"name": "逻辑乘<br>and",
+			"format": "and opd, ops",
+			"usage": "(opd)∧(ops)→opd",
+			"effectFlag": "pf,sf"
+		},
+		"bt": {
+			"name": "位测试<br>bit test",
+			"format": "bt opd, ops",
+			"usage": "将(ops)作为位偏移(0~31)指明的opd对应位的值→CF",
+			"effectFlag": "cf"
+		},
+		"btc": {
+			"name": "位测试并求补<br>bit test and complement",
+			"format": "btc opd, ops",
+			"usage": "在bt指令的基础上，将opd的对应位求反后→opd",
+			"effectFlag": "cf"
+		},
+		"btr": {
+			"name": "位测试并清0<br>bit test and reset",
+			"format": "btr opd, ops",
+			"usage": "在bt指令的基础上，将0→opd的对应位",
+			"effectFlag": "cf"
+		},
+		"bts": {
+			"name": "位测试并置1<br>bit test and set",
+			"format": "bts opd, ops",
+			"usage": "在bt指令的基础上，将1→opd的对应位",
+			"effectFlag": "cf"
+		},
+		"bsf": {
+			"name": "正向位扫描<br>bit scan forward",
+			"format": "bsf reg, ops",
+			"usage": "从0位开始扫描ops各位，若均为0，则zf=1，否则将第一个为1的位置值<br>→reg，zf=0",
+			"effectFlag": "zf"
+		},
+		"bsr": {
+			"name": "反向位扫描<br>bit scan reverse",
+			"format": "bsr reg, ops",
+			"usage": "从最高位开始扫描ops各位，若均为0，则zf=1，否则，将首先碰到的为1的位置值→reg，zf=0",
+			"effectFlag": "zf"
+		},
+		"test": {
+			"name": "测试<br>test",
+			"format": "test opd, ops",
+			"usage": "(ops)∧(opd)",
+			"effectFlag": "sf,zf,pf;<br>0→of,cf"
+		},
+		"or": {
+			"name": "逻辑加<br>inclusive or",
+			"format": "or opd, ops",
+			"usage": "(opd)∨(ops)→opd",
+			"effectFlag": "sf,zf,pf;<br>0→of,cf"
+		},
+		"xor": {
+			"name": "按位加<br>exclusive or",
+			"format": "xor opd, ops",
+			"usage": "加法，就是用异或的计算方法了",
+			"effectFlag": "sf,zf,pf;<br>0→of,cf"
+		},
+		"sal": {
+			"name": "算术左移<br>shift arithmetic left",
+			"format": "sal opd, 1 ;sal opd, cl;<br>sal opd, 8位立即数",
+			"usage": "cf中的值是最后移入位的值",
+			"effectFlag": "sf,zf,pf,cf<br>"
+		},
+		"shl": {
+			"name": "逻辑左移<br>shift logic left",
+			"format": "shl opd, 1; shl opd, cl<br>shl opd, 8位立即数",
+			"usage": "cf中的值是最后移入位的值",
+			"effectFlag": "sf,zf,pf,cf"
+		},
+		"shld": {
+			"name": "双精度左移<br>double precision shift left",
+			"format": "shld opd, reg,八位立即数<br>shld opd, reg, cl",
+			"usage": "将reg的最高n位移入opd的低n位中，reg保持不变，opd最后移入的一位保存在cf中",
+			"effectFlag": "cf,sf,zf,pf"
+		},
+		"sar": {
+			"name": "算术右移<br>shift arithmetic rigtht",
+			"format": "sar opd,1; sar opd, cl<br>sar opd, 8位立即数",
+			"usage": "将(opd)向右移动n个指定的次数且最高位保持不变，cf的内容为最后移入位的值",
+			"effectFlag": "sf,zf,pf,cf<br>等"
+		},
+		"shr": {
+			"name": "逻辑右移<br>shift logical right",
+			"format": "shr opd, 1; shr opd cl<br>shr opd, 8位立即数",
+			"usage": "将(opd)向右移动n规定的次数，最高位补入0，cf的内容为最后移入位的值",
+			"effectFlag": "sf,zf,pf,cf<br>等"
+		},
+		"shrd": {
+			"name": "双精度右移<br>double precision shift right",
+			"format": "shrd opd, reg,8位立即数<br>shrd opd, reg, cl",
+			"usage": "将reg的最低n位移入opd高n位中，reg保持不变，opd最后移出的一位保存在cf中",
+			"effectFlag": "cf,sf,zf,pf"
+		},
+		"ror": {
+			"name": "循环右移<br>rotate rigth",
+			"format": "ror opd, 1; ror opd cl<br>ror opd, 8位立即数",
+			"usage": "将目的操作数的最高位和最低位连接起来，组成一个环，将环中的所有位一起向右移动n位规定的数目(cl或立即数确定),cf为最后移入位的值",
+			"effectFlag": "cf"
+		},
+		"rol": {
+			"name": "循环左移<br>rotate left",
+			"format": "rol opd,1; rol opd cl<br>rol opd, 8位立即数",
+			"usage": "同上，向左移动",
+			"effectFlag": "cf"
+		},
+		"rcr": {
+			"name": "带进位的循环右移<br>rotate right through carry",
+			"format": "rcr opd, 1; rcr opd, cl<br>rcr opd, 8位立即数",
+			"usage": "cf在最低位，与目的操作数连成环，移动",
+			"effectFlag": "cf"
+		},
+		"rcl": {
+			"name": "带进位的循环左移<br>rotate left through carry",
+			"format": "rcl opd, 1; rcl opd, cl<br>rcl opd, 8位立即数",
+			"usage": "cf在最高位，与目的操作数连成环，移动指定的位数",
+			"effectFlag": "cf"
+		}
+	}
+}
