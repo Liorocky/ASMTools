@@ -1,11 +1,11 @@
-<script src="jquery-1.9.0.min.js"></script>
+<script src="js/jquery-1.9.0.min.js"></script>
 
 <script>
     var datas;
 
     $(document).ready(function () {
         $.ajax({
-            url: 'source.json',
+            url: 'source/source.json',
             async: false,
             success: function (data) {
                 datas = data;

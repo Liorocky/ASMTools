@@ -1,5 +1,5 @@
 "ui";
-
+//供Auto.js使用
 var json = files.read("source.json")
 obj = JSON.parse(json);
 
