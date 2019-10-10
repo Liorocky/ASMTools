@@ -1,0 +1,42 @@
+<script src="jquery-1.9.0.min.js"></script>
+
+<script>
+    var datas;
+
+    $(document).ready(function () {
+        $.ajax({
+            url: 'source.json',
+            async: false,
+            success: function (data) {
+                datas = data;
+                console.log(datas);
+            }
+        });
+    });
+
+    function alertkk(index) {
+        alert(index);
+    }
+
+    function getDate() {
+
+        // $("#name").html(datas.instruc[key].name);
+        // $("#format").html(datas.instruc[key].format);
+        // $("#usage").html(datas.instruc[key].usage);
+        // $("#effectFlag").html(datas.instruc[key].effectFlag);
+
+        for (let index in datas.instruc) {
+            $("#effectFlag").append("<li onclick=alertkk('" + index + "')>" + index + "</li>");
+            console.log(index, datas.instruc[index]);
+        };
+    }
+
+</script>
+
+<input type="text" id="search">
+<input type="button" onclick="getDate()">
+
+<p id="name"></p>
+<p id="format"></p>
+<p id="usage"></p>
+<p id="effectFlag"></p>
